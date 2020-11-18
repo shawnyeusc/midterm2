@@ -1,1 +1,1 @@
-This is my PM566 final project website. The link is: https://shawnyeusc.github.io/PM566-finalproject/.
+This is my PM566 final project website. The link is https://shawnyeusc.github.io/midterm2/. The data were acquired online from California Health and Human Services Open Data Portal. My objective is to identify the best general acute care hospitals in California with reference to Structural Performance Category (SPC) and Non-structural Performance Category (NPC), and to look at the distribution and overall seismic safety performance of California hospitals in 2020.
