@@ -138,7 +138,7 @@ ggplotly(p)
 ```
 By 2020, there are 384 acute care hospitals (including different campuses) that are still in service in 55 counties in California state. Los Angeles county has the most hospitals (90), followed by Orange county (31) and San Bernardino county (23).  
 
-## SCP and NCP by county
+## SPC and NPC by county
 ```{r,echo=FALSE,warning=FALSE}
 county_top %>% 
            plot_ly(x = ~`Mean SPC`, y = ~`Mean NPC`, 
@@ -157,7 +157,7 @@ leaflet(dt) %>%
 ```
 A majority of the facilities are located around Los Angeles and San Francisco. 
 
-## Summary table for SCP and NCP for all counties
+## Summary table for SPC and NPC for all counties
 ```{r, echo=FALSE,warning=FALSE}
 # summary table for scp, ncp for all counties
 # kable(county_top,'html',caption = 'Table1: Ordering Seismic Safety Performance For All Counties In CA')%>%
