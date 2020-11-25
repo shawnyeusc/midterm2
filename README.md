@@ -1,1 +1,1 @@
-This is my PM566 final project website. The link is https://shawnyeusc.github.io/midterm2/. In this project, I used the dataset which lists the Structural Performance Category or “SPC rating” and Nonstructural Performance Category or “NPC rating” of all General Acute Care Hospitals in California.  
+This is my PM566 final project website. The link is https://shawnyeusc.github.io/midterm2/. The primary interest of this project to look at the seismic safety performance of all General Acute Care Hospitals in California in 2020.  
