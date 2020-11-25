@@ -1,5 +1,5 @@
 ---
-title: "PM566 Final Project"
+title: "Seismic safety performance of California hospitals in 2020"
 author: "Shawn Ye"
 output: 
     html_document:
@@ -9,14 +9,19 @@ output:
 <br>
 
 # Introduction
-In the past, many hospitals in California were damaged and evacuated due to earthquakes. Some even collapsed and led to death of patients. All told, the quake had placed a heavy burden on California’s hospital system. Therefore, the state officials demand that by 2030, the hospitals not only need to remain standing but can also continue to operate after the earthquakes. My objective is to identify the best general acute care hospitals in California with reference to Structural Performance Category (SPC) and Non-structural Performance Category (NPC), and to look at the distribution and overall seismic safety performance of California hospitals in 2020.
+In the past, many hospitals in California were damaged and evacuated due to earthquakes. Some even collapsed and led to death of patients. All told, the quake had placed a heavy burden on California’s hospital system. Therefore, the state officials demand that by 2030, the hospitals not only need to remain standing but can also continue to operate after the earthquakes. 
 
-- SPC: ratings range from 1 to 5 with SPC 1 assigned to buildings posing significant risk of collapse following a strong earthquake and SPC 5 assigned to buildings reasonably capable of providing services to the public following a strong earthquake 
-- NPC: ratings range from 1 to 5 with NPC 1 assigned to buildings where the safe and orderly evacuation following a strong earthquake cannot be assured and NPC 5 assigned to buildings capable of continued operation for 72 hours without any power, water and sewer services following a strong ground motion
+The primary interests of this project are to:  
+- Identify the best general acute care hospitals in California with reference to Structural Performance Category (SPC) and Non-structural Performance Category (NPC).       
+- Look at the distribution of hospitals in CA.            
+- Look at the overall seismic safety performance of California hospitals in 2020.
+
+* SPC: ratings range from 1 to 5 with SPC 1 assigned to buildings posing significant risk of collapse following a strong earthquake and SPC 5 assigned to buildings reasonably capable of providing services to the public following a strong earthquake
+* NPC: ratings range from 1 to 5 with NPC 1 assigned to buildings where the safe and orderly evacuation following a strong earthquake cannot be assured and NPC 5 assigned to buildings capable of continued operation for 72 hours without any power, water and sewer services following a strong ground motion
 
 <br>
 
-# Results
+# Interactive visualization
 ```{r, include=FALSE}
 library(data.table)
 library(dtplyr)
@@ -74,6 +79,7 @@ dt$NPC <- as.integer(dt$NPC)
 length(unique(dt$county))
 length(unique(dt$`Facility Name`))
 dt$counid <- substr(dt$county, 1,2)
+dt$counname <- substr(dt$county, 5,100)
 
 # check the range of lattitude and longitude.
 summary(dt$Latitude)
@@ -123,22 +129,35 @@ tb <- as.data.frame(table(countyf$county))
 ```
 
 ## Comparison of buildings and facilities
-### Barcharts for top 10 facilities with most buildings
+### Barchart1 1: Top 10 facilities with most buildings
 ```{r, echo=FALSE}
 p <- ggplot(ctf_build_10, mapping = aes(x = substr(as.character(Var1),1,50), y = Freq)) + geom_bar(stat = 'identity',fill = 'salmon2') + xlab('hospital name') + theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5))
 ggplotly(p)
 ```
 Sharp Memorial Hospital, Torrance Memorial Medical Centre, Rady Children’s Hospital – San Diego and St. Joseph Hospital are the top four hospitals with most buildings in California. 
 
-### Barcharts for top 10 counties with most facilities
+<br>
+
+### Barchart 2: Top 15 counties with most facilities
 ```{r, echo=FALSE}
-ctc_faci_10 <- head(tb[order(tb[,2],decreasing = TRUE),],10)
+ctc_faci_10 <- head(tb[order(tb[,2],decreasing = TRUE),],15)
 p <- ggplot(ctc_faci_10, mapping = aes(x = substr(as.character(Var1),1,30), y = Freq)) + geom_bar(stat = 'identity',fill = 'skyblue3') +xlab('county_ID') + theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5))
 ggplotly(p)
 ```
-By 2020, there are 384 acute care hospitals (including different campuses) that are still in service in 55 counties in California state. Los Angeles county has the most hospitals (90), followed by Orange county (31) and San Bernardino county (23).  
 
-## SPC and NPC by county
+<br>
+
+## Barchart 3: 15 counties with the fewest facilities
+```{r, echo=FALSE}
+ctc_faci_10d <- head(tb[order(tb[,2],decreasing = FALSE),],15)
+pd <- ggplot(ctc_faci_10d, mapping = aes(x = substr(as.character(Var1),1,30), y = Freq)) + geom_bar(stat = 'identity',fill = 'skyblue3') +xlab('county_ID') + theme(axis.text.x = element_text(angle = 45, hjust = 0.5, vjust = 0.5))
+ggplotly(pd)
+```
+Los Angles has the most general acute care facilities. However, there are many counties that lack hospitals. 
+
+<br>
+
+## Scatterplot 1: SPC and NPC scores by county
 ```{r,echo=FALSE,warning=FALSE}
 county_top %>% 
            plot_ly(x = ~`Mean SPC`, y = ~`Mean NPC`, 
@@ -147,23 +166,37 @@ county_top %>%
                    color = ~county_name
                    )
 ```
-Amador, Kings, and Lassen are the three counties with the greatest overall seismic safety performance, with mean SPC and NPC ratings scoring 5 and 4 respectively. Colusa, Mariposa and Trinity, however, scores the lowest in CA, which only have 2 for SPC and 2 for NPC. 
+In general, a majority of counties have an average NPC between 2 and 3 as well as an average SPC between 3 and 4.
 
-## Hospital distribution in CA
+<br>
+
+## Leaflet 1: Hospital distribution in CA
 ```{r,echo=FALSE}
+library(RColorBrewer)
+colourCount = length(unique(dt$counname))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+pal <- colorFactor(
+  palette = getPalette(colourCount),
+  domain = dt$counname
+)
 leaflet(dt) %>%
   addProviderTiles('OpenStreetMap') %>%
-  addCircles(lat=~Latitude, lng=~Longitude, radius = 0.01 ) 
+  addCircles(lat=~Latitude, lng=~Longitude, radius = 0.01,color = ~pal(counname)
+  )
 ```
-A majority of the facilities are located around Los Angeles and San Francisco. 
+A majority of the facilities are located around Los Angeles, Orange and San Francisco. 
 
-## Summary table for SPC and NPC for all counties
+<br>
+
+## Table 1: SPC and NPC for all counties
 ```{r, echo=FALSE,warning=FALSE}
 # summary table for scp, ncp for all counties
 # kable(county_top,'html',caption = 'Table1: Ordering Seismic Safety Performance For All Counties In CA')%>%
   #kable_styling(bootstrap_options = c("striped", "hover"))%>%
   #footnote(general = "perf=(Mean SPC+Mean NPC)/2 ")
-
+county_top$`Mean SPC` <- round(county_top$`Mean SPC`, 2)
+county_top$`Mean NPC` <- round(county_top$`Mean NPC`, 2)
+county_top$perf <- round(county_top$perf, 2)
 library(DT)
 tb <- county_top %>% select(county_name, `Mean SPC`, `Mean NPC`, perf)
 datatable(tb)
@@ -172,7 +205,5 @@ datatable(tb)
 
 <br>
 
-# Conclusion
-- Kaiser Foundation Hospital in San Diego is the best hospital in terms of seismic safety performance.  
-- Most of the hospitals in California are located around Los Angeles and San Francisco.  
-- Among all the counties in California, hospitals in Amador, Kings, and Lassen county have the best average NPC and SPC scores, while hospitals in Colusa, Mariposa and Trinity county socres the lowest.
+# Full report
+The link to the report is.
