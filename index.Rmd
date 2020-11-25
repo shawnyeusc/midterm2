@@ -206,4 +206,4 @@ datatable(tb)
 <br>
 
 # Full report
-The link to the report is.
+The link to the report is https://github.com/shawnyeusc/midterm2/blob/master/report/report.pdf.
